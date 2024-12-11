@@ -70,177 +70,263 @@ public class Registro {
         // Mensaje a mostrar si el usuario cancela el registro.
         String cancelMessage = "El registro ha sido cancelado.";
 
-        // Solicitar y validar el nombre del usuario.
-        // String nombre declara una variable local al método realizar Registro que
-        // se usa exclusivamente para almacenar el nombre ingresado por el usuario
-        // durante el proceso de registro.
-        // Solicitar y validar el nombre del usuario.
-        // Bucle que se repite hasta que se ingrese un nombre válido
-      // Solicitar y validar el nombre del usuario.
-      String nombre;
-      while (true) {
-          nombre = JOptionPane.showInputDialog(ventana, "Ingrese un Nombre de Usuario:");
+        // Declaracion de una variable nombre que almacenará el nombre ingresado por el
+        // usuario
+        String nombre;
+        // Inicia un bucle infinito que continuará hasta que el usuario ingrese un
+        // nombre válido.
+        while (true) {
+            // Muestra un cuadro de entrada donde el usuario puede escribir su nombre.
+            // El valor ingresado se guarda en la variable nombre.
+            nombre = JOptionPane.showInputDialog(ventana, "Ingrese un Nombre de Usuario:");
+            // Si el usuario cancela el cuadro de entrada, muestra un mensaje de cancelación
+            // y devuelve null.
+            if (nombre == null) {
+                JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return null;
+            }
+            // Si el nombre ingresado está vacío, muestra un mensaje de error y vuelve a
+            // pedir el nombre con el "continue".
+            if (nombre.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(ventana, "Debe ingresar un Nombre de Usuario.", "Error de registro",
+                        JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+            // Si el nombre contiene números, muestra un mensaje de error y vuelve a pedir
+            // el nombre.
+            if (!esNombreValido(nombre)) {
+                JOptionPane.showMessageDialog(ventana, "El nombre de usuario no puede contener números.",
+                        "Error de registro", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+            // Si el nombre es válido, el bucle se interrumpe, y el proceso de registro
+            // continúa.
+            break;
+        }
 
-          if (nombre == null) {
-              JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado", JOptionPane.INFORMATION_MESSAGE);
-              return null;
-          }
+        // Solicitar y validar la fecha de nacimiento.
+        //// Declaracion de una variable que almacenará la fecha de nacimiento ingresado
+        // por el usuario
+        String fechaNacimientoStr;
+        // Esta variable se utilizará para almacenar la fecha de nacimiento del usuario.
+        Date fechaNacimiento = null;
+        // Inicia un bucle infinito que continuará hasta que se ingrese una fecha
+        // válida.
+        while (true) {
+            // Muestra un cuadro de diálogo de entrada en la ventana ventana
+            fechaNacimientoStr = JOptionPane.showInputDialog(ventana, "Ingrese su Fecha de Nacimiento (DD/MM/AAAA):");
+            // Si el usuario cancela el cuadro de entrada, la función retorna null, lo que
+            // indica que el proceso de registro ha sido cancelado.
+            if (fechaNacimientoStr == null)
+                return null;
+            // Verifica si la cadena ingresada "("fechaNacimientoStr" cumple con el formato
+            // de fecha.
+            // La expresión regular asegura que haya dos dígitos para el día, dos dígitos
+            // para el mes y cuatro dígitos para el año, separados por barras "/".
+            if (fechaNacimientoStr.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                try {
+                    // Se crea un objeto "SimpleDateFormat" con el formato "dd/MM/yyyy" para
+                    // analizar la fecha ingresada.
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    // La fecha ingresada se convierte en un objeto "java.util.Date" usando el
+                    // método parse.
+                    java.util.Date utilDate = sdf.parse(fechaNacimientoStr);
+                    // Se convierte esta fecha en un objeto Date.
+                    fechaNacimiento = new Date(utilDate.getTime());
+                    // Si todo es exitoso, el bucle se interrumpe con break
+                    break;
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ventana, "Error al Ingresar la fecha. Inténtelo nuevamente.",
+                            "Error de registro", JOptionPane.ERROR_MESSAGE);
+                }
+                // Si la fecha ingresada no tiene el formato correcto, se muestra un mensaje de
+                // error pidiendo al usuario que ingrese una fecha válida.
+            } else {
+                JOptionPane.showMessageDialog(ventana, "Por favor, ingrese una fecha válida (DD/MM/AAAA).",
+                        "Error de registro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
 
-          if (nombre.trim().isEmpty()) {
-              JOptionPane.showMessageDialog(ventana, "Debe ingresar un Nombre de Usuario.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-              continue;
-          }
+        // Declaracion de una variable llamada telefono de tipo String
+        String telefono;
+        // Inicio de un bucle while que continuará ejecutándose hasta que el número de
+        // teléfono ingresado sea válido.
+        while (true) {
+            // Muestra un cuadro de diálogo donde se solicita al usuario que ingrese su
+            // número de teléfono.
+            telefono = JOptionPane.showInputDialog(ventana, "Ingrese su número de teléfono:");
+            // Si el usuario cancela la entrada, muestra un mensaje indicando que el
+            // registro ha sido cancelado y retorna null,
+            // indicando que el proceso de registro se detienga.
+            if (telefono == null) {
+                JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return null;
+            }
+            // Si el número de teléfono ingresado tiene espacios al principio o al final, se
+            // elimina usando "trim()""
+            // o si su longitud no es exactamente 10 caracteres
+            if (telefono.trim().isEmpty() || telefono.length() != 10) {
+                JOptionPane.showMessageDialog(ventana, "Debe ingresar 10 dígitos. Intente nuevamente.",
+                        "Error de registro", JOptionPane.ERROR_MESSAGE);
+                // Si el número tiene 10 dígitos, se entra en un bloque donde se verifica si
+                // todos los caracteres de la cadena telefono son dígitos.
+            } else {
+                boolean valido = true;
+                for (int numerico = 0; numerico < telefono.length(); numerico++) {
+                    if (!Character.isDigit(telefono.charAt(numerico))) {
+                        valido = false;
+                        break;
+                    }
+                }
+                // Si la variable valido sigue siendo true, se sale del bucle con break.
+                // Si no es válido, se muestra un mensaje de error
+                if (valido) {
+                    // Si el número es válido, sale del bucle
+                    break;
+                } else {
+                    JOptionPane.showMessageDialog(ventana, "El número debe contener solo dígitos. Intente nuevamente.",
+                            "Error de registro", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
 
-          if (!esNombreValido(nombre)) {
-              JOptionPane.showMessageDialog(ventana, "El nombre de usuario no puede contener números.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-              continue;
-          }
+        // Solicitar y validar el correo electrónico.
+        String correo;
+        // Bucle infinito para solicitar el correo hasta que sea válido o se cancele la
+        // acción
+        while (true) {
+            // Mostrar un cuadro de entrada para que el usuario ingrese su correo
+            // electrónico
+            correo = JOptionPane.showInputDialog(ventana, "Ingrese su Correo Electrónico:");
 
-          break;
-      }
+            // Verificar si el usuario ha cancelado la entrada
+            if (correo == null) {
+                // Si se cancela, mostrar un mensaje y salir del método
+                JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return null;
+            }
 
-      // Solicitar y validar la fecha de nacimiento.
-      String fechaNacimientoStr;
-      Date fechaNacimiento = null;
-      while (true) {
-          fechaNacimientoStr = JOptionPane.showInputDialog(ventana, "Ingrese su Fecha de Nacimiento (DD/MM/AAAA):");
+            // Verificar si el correo es válido usando una función de validación
+            if (!esCorreoValido(correo)) {
+                // Si el correo no es válido, mostrar un mensaje de error y continuar
+                // solicitando el correo
+                JOptionPane.showMessageDialog(ventana, "Ingrese su correo correctamente.", "Error de registro",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Si el correo es válido, salir del bucle
+                break; // El correo es válido
+            }
+        }
 
-          if (fechaNacimientoStr == null) return null;
+        // Solicitar la contraseña.
+        JPasswordField contraseñaField = new JPasswordField();
+        // Mostrar un cuadro de diálogo para ingresar la contraseña
+        int option = JOptionPane.showConfirmDialog(ventana, contraseñaField, "Ingrese una Contraseña:",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-          if (fechaNacimientoStr.matches("\\d{2}/\\d{2}/\\d{4}")) {
-              try {
-                  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                  java.util.Date utilDate = sdf.parse(fechaNacimientoStr);
-                  fechaNacimiento = new Date(utilDate.getTime());
-                  break;
-              } catch (Exception e) {
-                  JOptionPane.showMessageDialog(ventana, "Error al Ingresar la fecha. Inténtelo nuevamente.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-              }
-          } else {
-              JOptionPane.showMessageDialog(ventana, "Por favor, ingrese una fecha válida (DD/MM/AAAA).", "Error de registro", JOptionPane.ERROR_MESSAGE);
-          }
-      }
+        // Si el usuario acepta la contraseña
+        if (option == JOptionPane.OK_OPTION) {
+            // Obtener la contraseña ingresada en forma de un array de caracteres
+            char[] contraseña = contraseñaField.getPassword();
+            // Verificar si la contraseña está vacía
+            if (contraseña.length == 0) {
+                // Si está vacía, mostrar un mensaje de error y salir del método
+                JOptionPane.showMessageDialog(ventana, "Debe ingresar una contraseña.", "Error de registro",
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+            // Convertir el array de caracteres a un String
+            String contraseñaString = new String(contraseña);
 
-      // Solicitar y validar el número de teléfono.
-      String telefono;
-      while (true) {
-          telefono = JOptionPane.showInputDialog(ventana, "Ingrese su número de teléfono:");
+            // Crear un nuevo objeto de registro con los datos ingresados
+            Registro nuevoRegistro = new Registro(0, nombre, fechaNacimiento, telefono, correo, contraseñaString);
 
-          if (telefono == null) {
-              JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado", JOptionPane.INFORMATION_MESSAGE);
-              return null;
-          }
+            // Intentar insertar el registro en la base de datos
+            if (insertarEnBaseDeDatos(nuevoRegistro)) {
+                // Si la inserción es exitosa, mostrar un mensaje de éxito y devolver el
+                // registro
+                JOptionPane.showMessageDialog(ventana, "Registro exitoso", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                return nuevoRegistro;
+            } else {
+                // Si la inserción falla, mostrar un mensaje de error y devolver null
+                JOptionPane.showMessageDialog(ventana, "Error al guardar en la base de datos", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+        } else {
+            // Si el usuario cancela, mostrar un mensaje y devolver null
+            JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        }
+    }
 
-          if (telefono.trim().isEmpty() || telefono.length() != 10) {
-              JOptionPane.showMessageDialog(ventana, "Debe ingresar 10 dígitos. Intente nuevamente.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-          } else {
-              boolean valido = true;
-              for (int numerico = 0; numerico < telefono.length(); numerico++) {
-                  if (!Character.isDigit(telefono.charAt(numerico))) {
-                      valido = false;
-                      break;
-                  }
-              }
+    // Método para validar que el nombre no contenga números
+    public static boolean esNombreValido(String nombre) {
+        // Recorrer cada carácter del nombre
+        for (char c : nombre.toCharArray()) {
+            // Si algún carácter es un dígito, devolver false
+            if (Character.isDigit(c)) {
+                return false;
+            }
+        }
+        // Si no se encontró ningún dígito, devolver true
+        return true;
+    }
 
-              if (valido) {
-                  break;  // El número es válido, salir del bucle
-              } else {
-                  JOptionPane.showMessageDialog(ventana, "El número debe contener solo dígitos. Intente nuevamente.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-              }
-          }
-      }
+    // Método para validar el correo sin expresión regular compleja
+    public static boolean esCorreoValido(String correo) {
+        // Verificar si el correo es nulo o está vacío
+        if (correo == null || correo.isEmpty()) {
+            return false;
+        }
+        // Buscar la posición del símbolo '@' y el último punto '.'
+        int atIndex = correo.indexOf('@');
+        int dotIndex = correo.lastIndexOf('.');
+        // Verificar si la estructura del correo es válida
+        return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < correo.length() - 1;
+    }
 
-      // Solicitar y validar el correo electrónico.
-      String correo;
-      while (true) {
-          correo = JOptionPane.showInputDialog(ventana, "Ingrese su Correo Electrónico:");
+    // Método para insertar un registro en la base de datos.
+    private static boolean insertarEnBaseDeDatos(Registro registro) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-          if (correo == null) {
-              JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado", JOptionPane.INFORMATION_MESSAGE);
-              return null;
-          }
+        try {
+            // Conectar a la base de datos MySQL
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Juegos", "root", "Mantismarina2");
+            // Definir la consulta SQL para insertar el registro
+            String sql = "INSERT INTO Registro (nombre, fechaNacimiento, telefono, correo, contraseña) VALUES (?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            // Asignar los valores del registro a los parámetros de la consulta
+            stmt.setString(1, registro.getNombre());
+            stmt.setDate(2, registro.getFechaNacimiento());
+            stmt.setString(3, registro.getTelefono());
+            stmt.setString(4, registro.getCorreo());
+            stmt.setString(5, registro.getContraseña());
 
-          if (!esCorreoValido(correo)) {
-              JOptionPane.showMessageDialog(ventana, "Ingrese su correo correctamente.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-          } else {
-              break; // El correo es válido
-          }
-      }
-
-      // Solicitar la contraseña.
-      JPasswordField contraseñaField = new JPasswordField();
-      int option = JOptionPane.showConfirmDialog(ventana, contraseñaField, "Ingrese una Contraseña:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-      if (option == JOptionPane.OK_OPTION) {
-          char[] contraseña = contraseñaField.getPassword();
-          if (contraseña.length == 0) {
-              JOptionPane.showMessageDialog(ventana, "Debe ingresar una contraseña.", "Error de registro", JOptionPane.ERROR_MESSAGE);
-              return null;
-          }
-          String contraseñaString = new String(contraseña);
-
-          Registro nuevoRegistro = new Registro(0, nombre, fechaNacimiento, telefono, correo, contraseñaString);
-
-          if (insertarEnBaseDeDatos(nuevoRegistro)) {
-              JOptionPane.showMessageDialog(ventana, "Registro exitoso", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-              return nuevoRegistro;
-          } else {
-              JOptionPane.showMessageDialog(ventana, "Error al guardar en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-              return null;
-          }
-      } else {
-          JOptionPane.showMessageDialog(ventana, cancelMessage, "Registro cancelado", JOptionPane.INFORMATION_MESSAGE);
-          return null;
-      }
-  }
-
-  // Método para validar que el nombre no contenga números
-  public static boolean esNombreValido(String nombre) {
-      for (char c : nombre.toCharArray()) {
-          if (Character.isDigit(c)) {
-              return false;
-          }
-      }
-      return true;
-  }
-
-  // Método para validar el correo sin expresión regular compleja
-  public static boolean esCorreoValido(String correo) {
-      if (correo == null || correo.isEmpty()) {
-          return false;
-      }
-      int atIndex = correo.indexOf('@');
-      int dotIndex = correo.lastIndexOf('.');
-      return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < correo.length() - 1;
-  }
-
-  // Método para insertar un registro en la base de datos.
-  private static boolean insertarEnBaseDeDatos(Registro registro) {
-      Connection conn = null;
-      PreparedStatement stmt = null;
-
-      try {
-          conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Juegos", "root", "Mantismarina2");
-          String sql = "INSERT INTO Registro (nombre, fechaNacimiento, telefono, correo, contraseña) VALUES (?, ?, ?, ?, ?)";
-          stmt = conn.prepareStatement(sql);
-          stmt.setString(1, registro.getNombre());
-          stmt.setDate(2, registro.getFechaNacimiento());
-          stmt.setString(3, registro.getTelefono());
-          stmt.setString(4, registro.getCorreo());
-          stmt.setString(5, registro.getContraseña());
-
-          int filasAfectadas = stmt.executeUpdate();
-          return filasAfectadas > 0;
-      } catch (SQLException e) {
-          e.printStackTrace();
-          return false;
-      } finally {
-          try {
-              if (stmt != null) stmt.close();
-              if (conn != null) conn.close();
-          } catch (SQLException e) {
-              e.printStackTrace();
-          }
-      }
-  }
+            // Ejecutar la actualización en la base de datos y verificar si se insertaron
+            // filas
+            int filasAfectadas = stmt.executeUpdate();
+            return filasAfectadas > 0;
+        } catch (SQLException e) {
+            // Si ocurre un error, imprimir el stack trace
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                // Cerrar los recursos (statement y conexión) si no son nulos
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                // Si ocurre un error al cerrar los recursos, imprimir el stack trace
+                e.printStackTrace();
+            }
+        }
+    }
 }
