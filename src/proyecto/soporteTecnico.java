@@ -63,20 +63,27 @@ public class soporteTecnico {
         //Se utiliza un ComponentAdapter, que es una clase adaptadora que implementa la interfaz ComponentListener
         //Esto permite sobrescribir solo los métodos necesarios, en este caso, componentResized.
         ventana.addComponentListener(new java.awt.event.ComponentAdapter() {
-            //Este método se ejecuta automáticamente cada vez que se cambia el tamaño de la ventana.
+            @Override
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                //Se obtiene el ancho actual de la ventana con el método getWidth(). 
-                //Este valor es clave para calcular las posiciones horizontales de los componente
-                int anchoDeVentana = ventana.getWidth();
-                //setBounds(x, y, width, height) Establece la posición y las dimensiones del componente
-                titulo.setBounds((anchoDeVentana - 300) / 2, 40, 300, 40); // Centrado
-                //Calculamos la posición x (800) para centrar el componente horizontalmente en la ventana (/2)
-                //Los valores 40, 250, 400, y 440 son las posiciones verticales (y) predefinidas para cada componente
-                descripcion.setBounds((anchoDeVentana - 800) / 2, 250, 800, 60); // Justo debajo del título
-                email.setBounds((anchoDeVentana - 800) / 2, 400, 800, 60); // Justo debajo del título
-                telefono.setBounds((anchoDeVentana - 800) / 2, 440, 800, 60); // Justo debajo del título
+                // Obtiene el ancho actual de la ventana
+                int anchoVentana = ventana.getWidth();
+        
+                // Centra los componentes horizontalmente en la ventana, manteniendo las posiciones verticales predefinidas
+                // Título centrado en la parte superior
+                titulo.setBounds(calcularPosicionCentrada(anchoVentana, 300), 40, 300, 40);
+                
+                // Descripción y campos de entrada centrados y alineados
+                descripcion.setBounds(calcularPosicionCentrada(anchoVentana, 800), 250, 800, 60);
+                email.setBounds(calcularPosicionCentrada(anchoVentana, 800), 400, 800, 60);
+                telefono.setBounds(calcularPosicionCentrada(anchoVentana, 800), 440, 800, 60);
+            }
+        
+            // Método para calcular la posición X centrada de un componente basado en el ancho de la ventana
+            private int calcularPosicionCentrada(int anchoVentana, int anchoComponente) {
+                return (anchoVentana - anchoComponente) / 2;
             }
         });
+        
         
 
         JMenuBar menuBar = new JMenuBar();
