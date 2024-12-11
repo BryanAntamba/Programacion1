@@ -108,50 +108,53 @@ public class Registro {
         // Solicitar y validar la fecha de nacimiento.
         //// Declaracion de una variable que almacenará la fecha de nacimiento ingresado
         // por el usuario
-       // Solicitar y validar la fecha de nacimiento.
-String fechaNacimientoStr;
-// Esta variable se utilizará para almacenar la fecha de nacimiento del usuario.
-Date fechaNacimiento = null;
-// Inicia un bucle infinito que continuará hasta que se ingrese una fecha válida.
-while (true) {
-    // Muestra un cuadro de diálogo de entrada en la ventana ventana
-    fechaNacimientoStr = JOptionPane.showInputDialog(ventana, "Ingrese su Fecha de Nacimiento (DDMMYYYY):");
-    // Si el usuario cancela el cuadro de entrada, la función retorna null, lo que indica que el proceso de registro ha sido cancelado.
-    if (fechaNacimientoStr == null)
-        return null;
-    
-    // Verifica si la cadena ingresada cumple con el formato requerido (solo números y 8 caracteres).
-    if (fechaNacimientoStr.matches("\\d{8}")) {
-        try {
-            // Extraer día, mes y año de la cadena ingresada.
-            String dia = fechaNacimientoStr.substring(0, 2);
-            String mes = fechaNacimientoStr.substring(2, 4);
-            String anio = fechaNacimientoStr.substring(4, 8);
-            
-            // Crear una cadena con formato "DD/MM/YYYY" para facilitar la conversión.
-            String fechaConFormato = dia + "/" + mes + "/" + anio;
+        // Solicitar y validar la fecha de nacimiento.
+        String fechaNacimientoStr;
+        // Esta variable se utilizará para almacenar la fecha de nacimiento del usuario.
+        Date fechaNacimiento = null;
+        // Inicia un bucle infinito que continuará hasta que se ingrese una fecha
+        // válida.
+        while (true) {
+            // Muestra un cuadro de diálogo de entrada en la ventana ventana
+            fechaNacimientoStr = JOptionPane.showInputDialog(ventana, "Ingrese su Fecha de Nacimiento (DDMMYYYY):");
+            // Si el usuario cancela el cuadro de entrada, la función retorna null, lo que
+            // indica que el proceso de registro ha sido cancelado.
+            if (fechaNacimientoStr == null)
+                return null;
 
-            // Crear un objeto "SimpleDateFormat" con el formato "dd/MM/yyyy".
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            sdf.setLenient(false); // Para evitar fechas inválidas como 31/02/2023.
-            
-            // Convertir la fecha a un objeto "java.util.Date".
-            java.util.Date utilDate = sdf.parse(fechaConFormato);
-            
-            // Convertir la fecha util a un objeto SQL Date.
-            fechaNacimiento = new Date(utilDate.getTime());
-            
-            // Si todo es exitoso, el bucle se interrumpe con break.
-            break;
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(ventana, "Error al Ingresar la fecha. Inténtelo nuevamente.",
-                    "Error de registro", JOptionPane.ERROR_MESSAGE);
+            // Verifica si la cadena ingresada cumple con el formato requerido (solo números
+            // y 8 caracteres).
+            if (fechaNacimientoStr.matches("\\d{8}")) {
+                try {
+                    // Extraer día, mes y año de la cadena ingresada.
+                    String dia = fechaNacimientoStr.substring(0, 2);
+                    String mes = fechaNacimientoStr.substring(2, 4);
+                    String anio = fechaNacimientoStr.substring(4, 8);
+
+                    // Crear una cadena con formato "DD/MM/YYYY" para facilitar la conversión.
+                    String fechaConFormato = dia + "/" + mes + "/" + anio;
+
+                    // Crear un objeto "SimpleDateFormat" con el formato "dd/MM/yyyy".
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    sdf.setLenient(false); // Para evitar fechas inválidas como 31/02/2023.
+
+                    // Convertir la fecha a un objeto "java.util.Date".
+                    java.util.Date utilDate = sdf.parse(fechaConFormato);
+
+                    // Convertir la fecha util a un objeto SQL Date.
+                    fechaNacimiento = new Date(utilDate.getTime());
+
+                    // Si todo es exitoso, el bucle se interrumpe con break.
+                    break;
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ventana, "Error al Ingresar la fecha. Inténtelo nuevamente.",
+                            "Error de registro", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(ventana, "Por favor, ingrese una fecha válida (DDMMYYYY).",
+                        "Error de registro", JOptionPane.ERROR_MESSAGE);
+            }
         }
-    } else {
-        JOptionPane.showMessageDialog(ventana, "Por favor, ingrese una fecha válida (DDMMYYYY).",
-                "Error de registro", JOptionPane.ERROR_MESSAGE);
-    }
-}
 
         // Declaracion de una variable llamada telefono de tipo String
         String telefono;
